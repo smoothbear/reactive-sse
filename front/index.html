@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" integrity="sha512-3pIirOrwegjM6erE5gPSwkUzO+3cTjpnV9lexlNZqvupR64iZBnOOTiiLPb9M36zpMScbmUNIcHUqKD47M719g==" crossorigin="anonymous" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap');
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        p {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+    </style>
+    <title>Message</title>
+</head>
+<body>
+    <div id="messageValue">
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw==" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        var source = null;
+        function start() {
+            source = new EventSource("http://localhost:8080/notification");
+            console.log("create EventSource");
+            source.onmessage = (ev) => {
+                console.log("on message: ", ev.data);
+                toastr.info(ev.data, "Server message");
+            };
+            source.onerror = (err) => {
+                console.log("on err: ", err);
+                stop();
+            };
+        }
+
+        function stop() {
+            if (source != null) {
+                source.close();
+                console.log("close EventSource");
+                source = null;
+            }
+        }
+
+        $(document).ready(() => start());
+        $(window).on("unload", () => stop());
+    </script>
+</body>
+</html>
